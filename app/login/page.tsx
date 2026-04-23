@@ -9,22 +9,19 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (session) {
-      router.push("/")
-    }
+    if (session) router.push("/")
   }, [session, router])
 
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
-        <div className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-indigo-50">
-
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
 
@@ -72,10 +69,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-
-        <p className="text-center text-gray-400 text-sm mt-6 font-medium">
-          BMS College of Engineering, Bengaluru
-        </p>
+        <p className="text-center text-gray-400 text-sm mt-6">BMS College of Engineering, Bengaluru</p>
       </div>
     </div>
   )
