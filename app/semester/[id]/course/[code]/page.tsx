@@ -91,7 +91,7 @@ export default function CoursePage() {
       <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
           <button onClick={() => router.push(`/semester/${semId}`)} className="text-gray-400 hover:text-orange-500 font-bold text-sm">
-            ← Back
+            Back
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
