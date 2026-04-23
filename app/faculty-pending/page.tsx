@@ -2,15 +2,40 @@
 
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function FacultyPendingPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login")
   }, [status, router])
+
+  const sendRequest = async () => {
+    if (!session?.user?.email) return
+    setSending(true)
+    try {
+      await fetch("/api/faculty-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: session.user.name,
+          email: session.user.email,
+        }),
+      })
+      setSent(true)
+    } catch (e) {
+      console.error(e)
+    }
+    setSending(false)
+  }
+
+  useEffect(() => {
+    if (session?.user?.email) sendRequest()
+  }, [session])
 
   if (status === "loading") {
     return (
@@ -25,24 +50,24 @@ export default function FacultyPendingPage() {
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 text-center">
           <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">⏳</span>
+            <span className="text-4xl">{sending ? "📤" : "⏳"}</span>
           </div>
-          <h1 className="text-2xl font-black text-gray-800 mb-2">Approval Pending</h1>
+          <h1 className="text-2xl font-black text-gray-800 mb-2">
+            {sending ? "Sending Request..." : "Approval Pending"}
+          </h1>
           <p className="text-gray-500 mb-4">
-            Your faculty account request has been sent to the admin.
+            Your faculty request has been sent to the admin.
           </p>
-          <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6">
-            <p className="text-indigo-700 text-sm font-semibold">
-              📧 Logged in as:
-            </p>
+          <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-4">
+            <p className="text-indigo-700 text-sm font-semibold">📧 Logged in as:</p>
             <p className="text-indigo-500 text-sm mt-1">{session?.user?.email}</p>
           </div>
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6">
             <p className="text-orange-700 text-sm font-semibold">
-              You will receive an email once admin approves your account.
+              ✅ Admin has been notified via email.
             </p>
             <p className="text-orange-500 text-xs mt-1">
-              This usually takes a few hours.
+              You will receive an approval email soon.
             </p>
           </div>
           <button
