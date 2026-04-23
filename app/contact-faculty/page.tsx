@@ -14,14 +14,24 @@ const faculty = [
   { name: "Prof. Raj T", dept: "Computer Science", email: "raj@bmsce.ac.in", subjects: "Web Tech, Blockchain" },
 ]
 
-const avatarColors = ["bg-orange-500","bg-indigo-500","bg-emerald-500","bg-pink-500","bg-blue-500","bg-purple-500","bg-yellow-500"]
+const avatarColors = [
+  "bg-orange-500",
+  "bg-indigo-500",
+  "bg-emerald-500",
+  "bg-pink-500",
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-yellow-500",
+]
 
 export default function ContactFacultyPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login")
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
   }, [status, router])
 
   if (status === "loading") {
@@ -32,11 +42,20 @@ export default function ContactFacultyPage() {
     )
   }
 
+  if (!session) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-indigo-50">
       <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-          <button onClick={() => router.push("/")} className="text-gray-400 hover:text-orange-500 font-bold text-sm">← Back</button>
+          <button
+            onClick={() => router.push("/")}
+            className="text-gray-400 hover:text-orange-500 font-bold text-sm"
+          >
+            Back
+          </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
               <span className="text-white font-black text-sm">BW</span>
@@ -52,10 +71,15 @@ export default function ContactFacultyPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {faculty.map((f, i) => (
-            <div key={f.email} className="bg-white rounded-2xl border-2 border-gray-100 p-5 shadow-sm hover:shadow-md transition-all">
+            <div
+              key={f.email}
+              className="bg-white rounded-2xl border-2 border-gray-100 p-5 shadow-sm hover:shadow-md transition-all"
+            >
               <div className="flex items-center gap-4 mb-4">
                 <div className={`w-12 h-12 ${avatarColors[i % avatarColors.length]} rounded-xl flex items-center justify-center`}>
-                  <span className="text-white font-black">{f.name.split(" ")[1]?.[0] || "F"}</span>
+                  <span className="text-white font-black text-lg">
+                    {f.name.split(" ")[1]?.[0] || "F"}
+                  </span>
                 </div>
                 <div>
                   <p className="font-black text-gray-800">{f.name}</p>
@@ -63,13 +87,14 @@ export default function ContactFacultyPage() {
                 </div>
               </div>
               <p className="text-xs text-gray-500 mb-3">
-                <span className="font-bold">Subjects: </span>{f.subjects}
+                <span className="font-bold">Subjects: </span>
+                {f.subjects}
               </p>
               
-                href={`mailto:${f.email}`}
+                href={"mailto:" + f.email}
                 className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-sm py-2 px-4 rounded-xl transition-all"
               >
-                <span>✉️</span>
+                <span>Email</span>
                 <span>{f.email}</span>
               </a>
             </div>
