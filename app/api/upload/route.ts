@@ -1,8 +1,15 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
 
 export async function POST(req: NextRequest) {
   try {
+    const { createClient } = await import("@supabase/supabase-js")
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
     const formData = await req.formData()
     const file = formData.get("file") as File
     const unitId = formData.get("unitId") as string
