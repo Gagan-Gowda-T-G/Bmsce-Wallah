@@ -1,5 +1,4 @@
 "use client"
-
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -9,10 +8,12 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (session) router.push("/")
-  }, [session, router])
+    if (status === "authenticated") {
+      router.replace("/")
+    }
+  }, [status, router])
 
-  if (status === "loading") {
+  if (status === "loading" || status === "authenticated") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
         <div className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
@@ -24,7 +25,6 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-indigo-50">
       <div className="w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
-
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-500 rounded-2xl mb-4 shadow-lg">
               <span className="text-white text-3xl font-black">BW</span>
@@ -56,13 +56,12 @@ export default function LoginPage() {
             onClick={() => signIn("google", { callbackUrl: "/faculty-pending" })}
             className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200"
           >
-            <span>👨‍🏫</span>
             <span>Faculty Login</span>
           </button>
 
           <div className="mt-6 bg-orange-50 border border-orange-200 rounded-2xl p-4">
             <p className="text-orange-700 text-sm font-semibold text-center">
-              🏫 For BMSCE students and faculty only
+              For BMSCE students and faculty only
             </p>
             <p className="text-orange-500 text-xs text-center mt-1">
               Faculty accounts require admin approval

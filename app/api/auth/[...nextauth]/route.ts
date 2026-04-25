@@ -1,7 +1,6 @@
 // @ts-nocheck
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import { supabase } from "@/lib/supabase"
 
 const handler = NextAuth({
   providers: [
@@ -11,33 +10,40 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt" as const },
-  pages: { signIn: "/login" },
-  callbacks: {
-    async signIn({ user }) {
-      if (!user.email) return false
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("email", user.email)
-        .single()
-      if (!data) {
-        await supabase.from("profiles").insert({
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: "student",
-          approved: false,
-        })
-      }
-      return true
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
     },
-    async jwt({ token, user }) {
-      if (user) token.user = user
+  },
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id
+        token.email = user.email
+        token.name = user.name
+        token.picture = user.image
+      }
       return token
     },
-    async session({ session, token }: any) {
-      session.user = token.user || session.user
+    async session({ session, token }) {
+      if (token) {
+        session.user.email = token.email
+        session.user.name = token.name
+        session.user.image = token.picture as string
+      }
       return session
     },
     async redirect({ url, baseUrl }) {
