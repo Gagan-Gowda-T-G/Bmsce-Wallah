@@ -8,12 +8,20 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && session) {
       router.replace("/")
     }
-  }, [status, router])
+  }, [status, session, router])
 
-  if (status === "loading" || status === "authenticated") {
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-orange-50">
+        <div className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  if (status === "authenticated") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50">
         <div className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
@@ -40,7 +48,7 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={() => signIn("google", { callbackUrl: "https://bmsece-wallah.vercel.app/" })}
             className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-orange-400 hover:bg-orange-50 text-gray-700 font-bold py-4 px-6 rounded-2xl transition-all duration-200 mb-4"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -53,7 +61,7 @@ export default function LoginPage() {
           </button>
 
           <button
-            onClick={() => signIn("google", { callbackUrl: "/faculty-pending" })}
+            onClick={() => signIn("google", { callbackUrl: "https://bmsece-wallah.vercel.app/faculty-pending" })}
             className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200"
           >
             <span>Faculty Login</span>
@@ -68,7 +76,9 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-        <p className="text-center text-gray-400 text-sm mt-6">BMS College of Engineering, Bengaluru</p>
+        <p className="text-center text-gray-400 text-sm mt-6">
+          BMS College of Engineering, Bengaluru
+        </p>
       </div>
     </div>
   )

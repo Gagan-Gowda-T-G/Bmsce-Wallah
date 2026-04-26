@@ -1,57 +1,49 @@
-// @ts-nocheck
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-key",
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60,
-  },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: true,
-      },
-    },
   },
   pages: {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: any) {
       if (user) {
-        token.id = user.id
         token.email = user.email
         token.name = user.name
         token.picture = user.image
       }
       return token
     },
-    async session({ session, token }) {
-      if (token) {
+    async session({ session, token }: any) {
+      if (token && session.user) {
         session.user.email = token.email
         session.user.name = token.name
-        session.user.image = token.picture as string
+        session.user.image = token.picture
       }
       return session
     },
-    async redirect({ url, baseUrl }) {
-      if (url.includes("faculty-pending")) return `${baseUrl}/faculty-pending`
-      if (url.startsWith(baseUrl)) return url
-      return baseUrl
+    async redirect({ url, baseUrl }: any) {
+      if (url.includes("/faculty-pending")) {
+        return baseUrl + "/faculty-pending"
+      }
+      if (url.startsWith(baseUrl)) {
+        return url
+      }
+      return baseUrl + "/"
     },
   },
-})
+}
 
+const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
